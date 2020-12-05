@@ -1,41 +1,34 @@
 import React, { useState } from "react";
+import ListItem from './ListItem';
 import "./../styles/App.css";
-import List from './List';
-
-function App()
-{
-	let [tasks, setTask] = useState([]);
-	let [newTask, setNewTask] = useState("");
-	
-	const addTask = () => {
-		tasks.push(newTask);
-		setTask([...tasks]);
-		setNewTask("");
+function App() {
+	const [items, setItems] = useState([]);
+	const [newItem, setNewItem] = useState("");
+	const addItem = () => {
+		items.push(newItem);
+		setItems([...items]);
+		setNewItem("");
 	}
-	
-	const addTaskToList = (e) => {
-		setNewTask(e.target.value);
+	const newItemChanged = (evt) => {
+		setNewItem(evt.target.value);
 	}
-
-	const editHandler = (editedValue, taskId) =>{
-		tasks[taskId] = editedValue;
-		setTask([...tasks]);
+	const editHandler = (editedValue,itemIdx) => {
+		items[itemIdx] = editedValue;
+		setItems([...items])
+	  }
+	const deleteHandler = (itemIdx) => {
+	  items.splice(itemIdx, 1);
+	  setItems([...items])
 	}
-
-	const deleteHandler = (taskId) =>{
-		tasks.splice(taskId, 1);
-		setTask([...tasks]);
-		console.log("Item with ", taskId, " is deleted");
-	}
-
 	return (
 	<div id="main">
-		<textarea  id="task" onChange={addTaskToList} value={newTask}></textarea>
-		<button  id="btn" onClick={addTask} disabled={newTask.trim().length === 0}>Add Task to the List</button>
-		{tasks.map((task, idx) => {
-			return <List task={task} key={idx} idx={idx} onDelete={deleteHandler} onEdit={editHandler} />
-		})}
-	</div> 
+	<textarea id="task" onChange={newItemChanged} placeholder="New Item" value={newItem}></textarea>
+	<button id="btn" onClick={addItem} 
+	disabled={newItem.trim().length===0}>Add Item</button>
+	{items.map((item,idx)=>(
+		<ListItem item={item} key={`${item}_${idx}`} idx={idx} editHandler={editHandler} deleteHandler={deleteHandler}/>
+	))}
+	</div>
 	);
 }
 
