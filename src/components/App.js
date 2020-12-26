@@ -1,33 +1,55 @@
-import React, { useState } from "react";
+import React ,{useState}from "react";
 import "./../styles/App.css";
-import ListItem from './ListItem';
-function App() {
-	const [items, setItems] = useState([]);
-	const [newItem, setNewItem] = useState("");
-	const addItem = () =>{
-		items.push(newItem);
-		setItems([...items]);
-		setNewItem("");
-	};
-	const setNewItemChanged = (evt) => {
-		setNewItem(evt.target.value);
-	};
-	const deleteHandler = (itemIdx) => {
-		items.splice(itemIdx,1);
-		setItems([...items]);
-	};
-	const editHandler = (editedValue, itemIdx) => {
-		items[itemIdx] = editedValue;
-		setItems([...items]);
-	} 
+
+window.id = 0;
+function App() 
+{
+	const [value,setValue] = useState("");
+	const [tasks,setTasks] = useState([]);
+	const [active,setActive] = useState(true);
+	
+	function handleChange(e){
+		if(value === ""){
+			setActive(false);
+		}
+		setValue(e.target.value);
+	}
+	function handleSave(){
+		if(value !== ""){
+			const newTasks = [...tasks,{key:window.id++,text:value}];
+			setTasks(newTasks);
+			setValue("");
+		}
+	}
+	function handleEdit(id){
+		const newValue = tasks.filter((task) => task.key === id);
+		const newTasks = tasks.filter((task) => task.key !== id);
+		setTasks(newTasks);
+		setValue(newValue[0].text);
+	}
+	function handleDelete(id){
+		const newTasks = tasks.filter((task) => task.key !== id);
+		setTasks(newTasks);
+	}
 	return (
 	<div id="main">
-	<textarea id="task" onChange={setNewItemChanged} placeholder="New Item" value={newItem}></textarea>
-	<button id="btn" onClick={addItem} disabled={newItem.trim().length===0}>Add Item</button>
-	{items.map((item,idx) =>(
-		<ListItem item={item} key={`${item}_${idx}`} idx={idx} editHandler={editHandler} deleteHandler = {deleteHandler}/>
-	))}
+		<textarea id="task" className="editTask" onChange={handleChange} value={value}>{value}</textarea>
+		<button id="btn" className ="saveTask" onClick={() => handleSave()} disable={active}>Save</button>
+		<ul>
+			{tasks.map((task) => {
+				return (
+					<div key={task.key}>
+						<li className="list">{task.text}</li>
+						<button className="edit" onClick={() => handleEdit(task.key)}>Edit</button>
+						<button className="delete" onClick={() => handleDelete(task.key)}>Delete</button>
+
+					</div>
+				);
+			})}
+		</ul>
 	</div>
 	);
 }
+
+
 export default App;
